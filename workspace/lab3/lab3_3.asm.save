@@ -1,0 +1,60 @@
+SECTION .data
+
+SECTION .text
+
+Shell:	db `/bin/sh`,0;
+
+Msg:	db `Hello world!`,0;
+
+global _start
+
+
+_start:
+	mov rax, 
+	jmp _exit
+
+
+_shell:
+	; Open shell
+	mov rax, 59	; sys_execve
+	mov rdi, shell	; filename
+	mov rsi, 0	; argv
+	mov rdx, 0	; envp
+	syscall
+
+	jmp exit
+
+
+_socket:
+	; Create socket struct in rsp
+	push word 0
+	push dword 0x7F000001	; address 127.0.0.1
+	push word 0x115C	; port 4444
+	push word 0x0002	; af_inet
+	mov rax, 41
+	mov rdi, 0x0002		; family
+	mov rsi, 0x0001		; type
+	mov rdx, 0
+	syscall
+
+
+
+_socksend:
+	mov rdi, rax	; fd
+	mov rax, 44	; sys_sendto
+	mov rsi, Msg	; ubuf
+	mov rdx, 13	; size
+	mov r10, 0	; flags
+	 push word 0                                                                                                                                  
+        push dword 0x7F000001   ; address 127.0.0.1                                                                                                
+        push word 0x115C        ; port 4444                                                                                                          
+        push word 0x0002        ; af_inet
+	mov r8, rsp
+	mov r9,
+
+
+_exit:
+	; exit
+	mov rax, 60
+	mov rdi, 0
+	syscall
